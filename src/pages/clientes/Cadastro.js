@@ -20,6 +20,7 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
+import { KeyboardDatePicker } from '@material-ui/pickers';
 
 /************ API PARA CONSULTA DE CEP ***********************/
 const apiCep = "https://webmaniabr.com/api/1/cep/";
@@ -38,7 +39,7 @@ const CadCliente = props => {
     cep: "",
     endereco: "",
     numero: "",
-    uf: "",
+    uf: "CE",
     bairro: "",
     cidade: "",
     complemento: "",
@@ -93,11 +94,14 @@ const CadCliente = props => {
     }
   ];
 
+  const estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
+
   const handleChange = event => {
     setValues({
       ...values,
       [event.target.name]: event.target.value
     });
+    console.log(values.tipo);
   };
 
   const hanlerClickContato = () => {
@@ -125,7 +129,7 @@ const CadCliente = props => {
   const handleChangeCpfCnpj = event => {
     let vlr = event.target.value;
     let vlrFormatado = values.cpfoucnpj;
-    if ((values.tipo = "CNPJ")) {
+    if ((values.tipo === "J")) {
       vlrFormatado = vlr
         .replace(/\D/g, "") // substitui qualquer caracter que nao seja numero por nada
         .replace(/(\d{2})(\d)/, "$1.$2") // captura 2 grupos de numero o primeiro de 3 e o segundo de 1, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de numero
@@ -249,7 +253,7 @@ const CadCliente = props => {
               <Grid item md={3} xs={12}>
                 <TextField
                   fullWidth
-                  label={values.tipo ? "CNPJ" : "CPF"}
+                  label={values.tipo === 'J' ? "CNPJ" : "CPF"}
                   margin="dense"
                   name="cpfoucnpj"
                   required
@@ -264,7 +268,7 @@ const CadCliente = props => {
               <Grid item md={3} xs={12}>
                 <TextField
                   fullWidth
-                  label={values.tipo ? "IE" : "RG"}
+                  label={values.tipo === 'J' ? "IE" : "RG"}
                   margin="dense"
                   name="rgouie"
                   required
@@ -277,7 +281,7 @@ const CadCliente = props => {
                 ></TextField>
               </Grid>
               <Grid item md={3} xs={12}>
-                <TextField
+                <KeyboardDatePicker
                   fullWidth
                   label="Aniversário"
                   margin="dense"
@@ -347,7 +351,15 @@ const CadCliente = props => {
                     shrink: true
                   }}
                   variant="outlined"
-                />
+                  select
+                  SelectProps={{ native: true }}
+                >
+                  {estados.map(option => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </TextField>
               </Grid>
               <Grid item md={3} xs={12}>
                 <TextField
