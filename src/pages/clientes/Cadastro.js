@@ -20,7 +20,11 @@ import Fab from "@material-ui/core/Fab";
 import AddIcon from "@material-ui/icons/Add";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-import { KeyboardDatePicker } from '@material-ui/pickers';
+import MomentUtils from "@date-io/moment";
+import {
+  MuiPickersUtilsProvider,
+  KeyboardDatePicker
+} from "@material-ui/pickers";
 
 /************ API PARA CONSULTA DE CEP ***********************/
 const apiCep = "https://webmaniabr.com/api/1/cep/";
@@ -35,7 +39,7 @@ const CadCliente = props => {
     phone: "",
     cpfoucnpj: "",
     rgouie: "",
-    aniversario: new Date("2014-08-18T21:11:54"),
+    aniversario: new Date(),
     cep: "",
     endereco: "",
     numero: "",
@@ -94,7 +98,35 @@ const CadCliente = props => {
     }
   ];
 
-  const estados = ['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']
+  const estados = [
+    "AC",
+    "AL",
+    "AP",
+    "AM",
+    "BA",
+    "CE",
+    "DF",
+    "ES",
+    "GO",
+    "MA",
+    "MT",
+    "MS",
+    "MG",
+    "PA",
+    "PB",
+    "PR",
+    "PE",
+    "PI",
+    "RJ",
+    "RN",
+    "RS",
+    "RO",
+    "RR",
+    "SC",
+    "SP",
+    "SE",
+    "TO"
+  ];
 
   const handleChange = event => {
     setValues({
@@ -102,6 +134,28 @@ const CadCliente = props => {
       [event.target.name]: event.target.value
     });
     console.log(values.tipo);
+  };
+
+  const handleChangeContato = event => {
+    if (values.tipoContato === "email") {
+      setValues({
+        ...values,
+        [event.target.name]: event.target.value
+      });
+    } else {
+      let vlr = event.target.value;
+      let vlrFormatado = vlr;
+      if (vlr.length < 15) {
+        vlrFormatado = vlr
+          .replace(/\D/g, "")
+          .replace(/^(\d{2})(\d)/g, "($1) $2")
+          .replace(/(\d)(\d{4})$/, "$1-$2");
+        setValues({
+          ...values,
+          contato: vlrFormatado
+        });
+      }
+    }
   };
 
   const hanlerClickContato = () => {
@@ -129,7 +183,7 @@ const CadCliente = props => {
   const handleChangeCpfCnpj = event => {
     let vlr = event.target.value;
     let vlrFormatado = values.cpfoucnpj;
-    if ((values.tipo === "J")) {
+    if (values.tipo === "J") {
       vlrFormatado = vlr
         .replace(/\D/g, "") // substitui qualquer caracter que nao seja numero por nada
         .replace(/(\d{2})(\d)/, "$1.$2") // captura 2 grupos de numero o primeiro de 3 e o segundo de 1, apos capturar o primeiro grupo ele adiciona um ponto antes do segundo grupo de numero
@@ -253,7 +307,7 @@ const CadCliente = props => {
               <Grid item md={3} xs={12}>
                 <TextField
                   fullWidth
-                  label={values.tipo === 'J' ? "CNPJ" : "CPF"}
+                  label={values.tipo === "J" ? "CNPJ" : "CPF"}
                   margin="dense"
                   name="cpfoucnpj"
                   required
@@ -268,7 +322,7 @@ const CadCliente = props => {
               <Grid item md={3} xs={12}>
                 <TextField
                   fullWidth
-                  label={values.tipo === 'J' ? "IE" : "RG"}
+                  label={values.tipo === "J" ? "IE" : "RG"}
                   margin="dense"
                   name="rgouie"
                   required
@@ -280,21 +334,26 @@ const CadCliente = props => {
                   variant="outlined"
                 ></TextField>
               </Grid>
+
               <Grid item md={3} xs={12}>
-                <KeyboardDatePicker
-                  fullWidth
-                  label="Aniversário"
-                  margin="dense"
-                  name="aniversario"
-                  type="date"
-                  format="dd/MM/yyyy"
-                  value={values.aniversario}
-                  onChange={handleChange}
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                  variant="outlined"
-                />
+                <MuiPickersUtilsProvider utils={MomentUtils}>
+                  <KeyboardDatePicker
+                    autoOk
+                    variant="inline"
+                    name="aniversario"
+                    inputVariant="outlined"
+                    label="Aniversário"
+                    format="DD/MM"
+                    value={values.aniversario}
+                    InputAdornmentProps={{ position: "start" }}
+                    onChange={date =>
+                      setValues({ ...values, aniversario: date })
+                    }
+                    KeyboardButtonProps={{
+                      "aria-label": "change date"
+                    }}
+                  />
+                </MuiPickersUtilsProvider>
               </Grid>
               <Grid item md={3} xs={12}>
                 <TextField
@@ -439,7 +498,7 @@ const CadCliente = props => {
                   margin="dense"
                   name="contato"
                   value={values.contato}
-                  onChange={handleChange}
+                  onChange={handleChangeContato}
                   InputLabelProps={{
                     shrink: true
                   }}

@@ -104,10 +104,6 @@ function App() {
     setOpen(false);
   };
 
-  const HandleClick = text => {
-    console.log(`Botão ${text} clicado!`);
-  };
-
   return (
     <BrowserRouter>
       <div className={classes.root}>
